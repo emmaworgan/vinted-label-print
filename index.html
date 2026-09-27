@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parcel label sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAEEF2; --surface:#FFFFFF; --ink:#18222D; --muted:#56636F; --line:#CFD7DF;
+  --accent:#0F6E5C; --accent-ink:#FFFFFF; --accent-soft:#DDEFEA; --warn:#9A3F17;
+  --paper:#FFFFFF; --slot:#E4E9EE; --skip:#C7CFD7;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#11171C; --surface:#1A232B; --ink:#E4EAEF; --muted:#9AA7B2; --line:#2D3842;
+    --accent:#40BF9F; --accent-ink:#062019; --accent-soft:#16332C; --warn:#F09A6E;
+    --paper:#F7F8F9; --slot:#E1E6EB; --skip:#AEB8C2;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11171C; --surface:#1A232B; --ink:#E4EAEF; --muted:#9AA7B2; --line:#2D3842;
+  --accent:#40BF9F; --accent-ink:#062019; --accent-soft:#16332C; --warn:#F09A6E;
+  --paper:#F7F8F9; --slot:#E1E6EB; --skip:#AEB8C2;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.5 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 20px 48px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 4px}
+.lede{color:var(--muted);margin:0 0 24px;max-width:60ch}
+.grid{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px}
+.step h2{font-size:1.1rem;margin:0 0 12px;display:flex;gap:10px;align-items:baseline}
+.step h2 .n{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;
+  background:var(--accent);color:var(--accent-ink);font-size:.85rem;flex:none}
+.drop{border:2px dashed var(--line);border-radius:8px;padding:20px;text-align:center;cursor:pointer}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop p{margin:0 0 8px}
+.hint{color:var(--muted);font-size:.9rem;margin:8px 0 0}
+button,.btn{font:inherit;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700;padding:12px 18px;width:100%}
+button.secondary{width:100%;margin-top:10px;border-color:var(--accent);color:var(--accent);font-weight:700}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,select:focus-visible,input:focus-visible,.drop:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.labels{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.labels li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px}
+.labels canvas{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:4px;flex:none;border:1px solid var(--line)}
+.labels .name{flex:1;min-width:0;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.labels .acts{display:flex;gap:6px}
+.labels .acts button{padding:6px 10px;font-size:.88rem}
+label.field{display:block;margin:0 0 10px}
+label.field span{display:block;font-size:.9rem;color:var(--muted);margin-bottom:3px}
+select,input[type=number]{font:inherit;width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+details{margin-top:6px}
+summary{cursor:pointer;color:var(--accent);font-weight:700;padding:4px 0}
+.picker{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:170px;aspect-ratio:210/297;padding:8px;
+  background:var(--paper);border-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.15),0 4px 12px rgba(20,30,40,.1);flex:none}
+.slots button{padding:4px;border-radius:5px;background:var(--accent-soft);border:2px solid var(--accent);color:var(--ink);
+  font-size:.8rem;line-height:1.25;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.slots button .big{font-size:1.25rem;font-weight:700;color:var(--accent)}
+.slots button[aria-pressed="true"]{background:var(--skip);border-color:var(--skip);color:#39424B;
+  background-image:repeating-linear-gradient(135deg,transparent 0 6px,rgba(0,0,0,.06) 6px 12px)}
+.slots button[aria-pressed="true"] .big{color:#39424B}
+.pickside{flex:1;min-width:170px}
+.slotsum{margin:0 0 12px;font-size:.95rem}
+.afterprint{margin-top:12px;padding:12px;border-radius:8px;background:var(--accent-soft);border:1px solid var(--accent)}
+.afterprint p{margin:0 0 10px}
+.afteracts{display:flex;gap:8px;flex-wrap:wrap}
+.afteracts button.primary{width:auto;padding:8px 14px}
+.sheet canvas.clickable{cursor:pointer}
+.status{min-height:1.5em;margin:10px 0 0;font-size:.95rem}
+.status.err{color:var(--warn)}
+.sheets{display:flex;flex-wrap:wrap;gap:20px}
+.sheet{flex:1 1 300px;max-width:460px}
+.sheet canvas{width:100%;height:auto;display:block;background:var(--paper);border-radius:3px;
+  box-shadow:0 1px 2px rgba(0,0,0,.15),0 8px 24px rgba(20,30,40,.12)}
+.sheet p{margin:8px 0 0;color:var(--muted);font-size:.9rem}
+.empty{border:2px dashed var(--line);border-radius:10px;padding:48px 20px;text-align:center;color:var(--muted)}
+.printnotes{margin:12px 0 0;padding-left:1.2em;font-size:.92rem;color:var(--muted)}
+.printnotes li{margin-bottom:4px}
+.printnotes strong{color:var(--ink)}
+/* crop dialog */
+dialog{border:none;border-radius:12px;padding:0;max-width:min(94vw,900px);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(10,15,20,.6)}
+.dlg{padding:16px}
+.dlg h3{margin:0 0 4px}
+.dlg p{margin:0 0 10px;color:var(--muted);font-size:.92rem}
+.cropbox{overflow:auto;max-height:70vh;text-align:center;background:#8893a0;border-radius:6px;padding:8px}
+#cropCanvas{touch-action:none;cursor:crosshair;max-width:100%;height:auto;background:#fff}
+.dlg .bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px}
+.dlg .bar .grow{flex:1}
+.dlg .bar button.primary{width:auto}
+.privacy{font-size:.88rem;color:var(--muted);margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Parcel label sheet</h1>
+  <p class="lede">Shrink Vinted shipping labels to fit label paper with four labels per A4 sheet, then print them from any printer.</p>
+
+  <div class="grid">
+    <div>
+      <section class="step">
+        <h2><span class="n">1</span>Add your labels</h2>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose label files">
+          <p><strong>Drop label PDFs here</strong> or tap to choose</p>
+          <span class="hint">PDF, PNG or JPG. Add several at once.</span>
+        </div>
+        <input type="file" id="file" accept="application/pdf,image/png,image/jpeg" multiple hidden>
+        <ul class="labels" id="labelList"></ul>
+        <p class="hint" id="cropHint" hidden>Each label is trimmed to its printed area automatically. If the drop-off instructions got included, use <strong>Adjust</strong> to draw a box around just the label.</p>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">2</span>Match your label paper</h2>
+        <label class="field"><span>Label paper</span>
+          <select id="preset"></select>
+        </label>
+        <p class="hint" style="margin:-4px 0 10px">Check the packet: most 4-per-sheet paper is 99.1 × 139 mm. Choose Custom and enter the sizes from the packet if yours is different.</p>
+        <details>
+          <summary>Sizes and alignment</summary>
+          <div class="row">
+            <label class="field"><span>Label width (mm)</span><input type="number" step="0.1" id="w"></label>
+            <label class="field"><span>Label height (mm)</span><input type="number" step="0.1" id="h"></label>
+          </div>
+          <div class="row">
+            <label class="field"><span>Top margin (mm)</span><input type="number" step="0.1" id="top"></label>
+            <label class="field"><span>Left margin (mm)</span><input type="number" step="0.1" id="left"></label>
+          </div>
+          <div class="row">
+            <label class="field"><span>Gap across (mm)</span><input type="number" step="0.1" id="gapX"></label>
+            <label class="field"><span>Gap down (mm)</span><input type="number" step="0.1" id="gapY"></label>
+          </div>
+          <div class="row3">
+            <label class="field"><span>Border inside label (mm)</span><input type="number" step="0.5" min="0" id="pad"></label>
+            <label class="field"><span>Nudge right (mm)</span><input type="number" step="0.5" id="nx"></label>
+            <label class="field"><span>Nudge down (mm)</span><input type="number" step="0.5" id="ny"></label>
+          </div>
+          <label class="field"><span>Turn labels to fit</span>
+            <select id="rot">
+              <option value="auto">Automatically, for the biggest print</option>
+              <option value="none">Never</option>
+              <option value="rotate">Always turn sideways</option>
+            </select>
+          </label>
+          <p class="hint">If the print lands slightly off the labels, use the nudge boxes. Negative numbers move it left or up. These settings are remembered on this device.</p>
+        </details>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">3</span>Choose where to print</h2>
+        <p class="hint" style="margin:0 0 10px">Tap a spot to switch it between <strong>Print here</strong> and <strong>Used</strong>. Labels fill the free spots in order, so a half-used sheet can go back in the printer.</p>
+        <div class="picker">
+          <div class="slots" id="slots"></div>
+          <div class="pickside">
+            <p id="slotSummary" class="slotsum"></p>
+            <button type="button" id="freshSheet">Start a fresh sheet</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">4</span>Download and print</h2>
+        <button class="primary" id="go" disabled>Download PDF to print</button>
+        <p class="status" id="status" role="status"></p>
+        <div class="afterprint" id="afterPrint" hidden>
+          <p id="afterText"></p>
+          <div class="afteracts">
+            <button type="button" class="primary" id="markUsed">Yes, mark them as used</button>
+            <button type="button" id="notYet">Not yet</button>
+          </div>
+        </div>
+        <ol class="printnotes">
+          <li>Open the PDF and print it. In the print settings, set scale to <strong>100%</strong> or <strong>Actual size</strong> and turn off <strong>Fit to page</strong>, or the labels won't line up.</li>
+          <li>First time? Print on plain paper and hold it against a label sheet up to the light to check alignment.</li>
+        </ol>
+      </section>
+    </div>
+
+    <div>
+      <div id="sheets" class="sheets"></div>
+      <div id="empty" class="empty">Your sheet preview appears here once you add a label.</div>
+    </div>
+  </div>
+
+  <p class="privacy">Your labels stay on your device. Files are read and rearranged inside your browser and aren't uploaded anywhere.</p>
+</div>
+
+<dialog id="cropDlg">
+  <div class="dlg">
+    <h3>Adjust label area</h3>
+    <p>Drag a box around the part to print. Everything outside it is left off.</p>
+    <div class="cropbox"><canvas id="cropCanvas"></canvas></div>
+    <div class="bar">
+      <button id="cropAuto">Trim automatically</button>
+      <button id="cropAll">Use whole page</button>
+      <span class="grow"></span>
+      <button class="primary" id="cropDone">Done</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+/* ---------- layout maths (shared by preview and PDF) ---------- */
+const MM = 72 / 25.4;             // PDF points per mm
+const A4 = { w: 210, h: 297 };
+const PRESETS = {
+  l7169:   { name: "4 per sheet, 99.1 × 139 mm (Avery L7169 and similar)", w: 99.1, h: 139, top: 9.5, left: 4.65, gapX: 2.5, gapY: 0 },
+  quarter: { name: "Quarter sheets, 105 × 148.5 mm, no gaps", w: 105, h: 148.5, top: 0, left: 0, gapX: 0, gapY: 0 },
+  custom:  { name: "Custom sizes" }
+};
+
+function slotRect(i, L) {           // mm, origin top-left of the sheet
+  const col = i % 2, row = Math.floor(i / 2);
+  return { x: L.left + col * (L.w + L.gapX) + L.nx, y: L.top + row * (L.h + L.gapY) + L.ny, w: L.w, h: L.h };
+}
+function contentArea(r, pad) {
+  const p = Math.max(0, Math.min(pad, r.w / 3, r.h / 3));
+  return { x: r.x + p, y: r.y + p, w: r.w - 2 * p, h: r.h - 2 * p };
+}
+// dw, dh: the label as seen (any unit). Returns rotation (deg, anticlockwise) and mm-per-unit.
+function fit(dw, dh, area, mode) {
+  const k0 = Math.min(area.w / dw, area.h / dh);
+  const k90 = Math.min(area.w / dh, area.h / dw);
+  let rot = 0;
+  if (mode === "rotate" || (mode === "auto" && k90 > k0 * 1.02)) rot = 90;
+  return { rot, k: rot ? k90 : k0 };
+}
+function plan(labels, L, skip, mode) {
+  const out = [];
+  let sheet = 0, slot = 0;
+  const free = (s, i) => !(s === 0 && skip[i]);
+  const advance = () => { do { slot++; if (slot > 3) { slot = 0; sheet++; } } while (!free(sheet, slot)); };
+  if (!free(0, 0)) advance();
+  for (const lab of labels) {
+    const area = contentArea(slotRect(slot, L), L.pad);
+    const f = fit(lab.crop.w, lab.crop.h, area, mode);
+    out.push({ lab, sheet, slot, area, rot: f.rot, k: f.k });
+    advance();
+  }
+  return out;
+}
+// Where to put an object's origin so that, drawn at scale s and rotated theta (deg, anticlockwise,
+// about its origin, PDF y-up), its centre lands on (cx, cy).
+function originFor(cx, cy, bw, bh, s, theta) {
+  const t = theta * Math.PI / 180, a = bw * s / 2, b = bh * s / 2;
+  return { x: cx - (Math.cos(t) * a - Math.sin(t) * b), y: cy - (Math.sin(t) * a + Math.cos(t) * b) };
+}
+/* ---------- end layout maths ---------- */
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("labelsheet:" + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("labelsheet:" + k, JSON.stringify(v)); } catch {} }
+};
+
+const state = {
+  labels: [],
+  files: new Map(),      // fileId -> {bytes, pdfLibDoc}
+  preset: store.get("preset", "l7169"),
+  L: Object.assign({ pad: 3, nx: 0, ny: 0 }, PRESETS.l7169, store.get("layout", {})),
+  skip: (() => { const u = store.get("used", null); return Array.isArray(u) && u.length === 4 && !u.every(Boolean) ? u.map(Boolean) : [false, false, false, false]; })(),
+  rot: store.get("rot", "auto")
+};
+delete state.L.name;
+
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+}
+
+/* ---------- settings UI ---------- */
+const fields = ["w", "h", "top", "left", "gapX", "gapY", "pad", "nx", "ny"];
+function initSettings() {
+  const sel = $("preset");
+  for (const [k, p] of Object.entries(PRESETS)) sel.add(new Option(p.name, k));
+  sel.value = state.preset;
+  $("rot").value = state.rot;
+  fields.forEach(f => {
+    $(f).value = state.L[f];
+    $(f).addEventListener("input", () => {
+      const v = parseFloat($(f).value);
+      if (!Number.isFinite(v)) return;
+      state.L[f] = v;
+      if (["w", "h", "top", "left", "gapX", "gapY"].includes(f) && state.preset !== "custom") {
+        state.preset = "custom"; sel.value = "custom";
+      }
+      saveSettings(); render();
+    });
+  });
+  sel.addEventListener("change", () => {
+    state.preset = sel.value;
+    const p = PRESETS[sel.value];
+    if (p.w) {
+      ["w", "h", "top", "left", "gapX", "gapY"].forEach(f => { state.L[f] = p[f]; $(f).value = p[f]; });
+    } else {
+      $("w").closest("details").open = true;
+    }
+    saveSettings(); render();
+  });
+  $("rot").addEventListener("change", () => { state.rot = $("rot").value; store.set("rot", state.rot); render(); });
+
+  SLOT_NAMES.forEach((n, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.addEventListener("click", () => toggleSlot(i));
+    $("slots").appendChild(b);
+  });
+  $("freshSheet").addEventListener("click", () => {
+    state.skip = [false, false, false, false]; saveUsed(); hideAfterPrint(); render();
+  });
+  $("markUsed").addEventListener("click", markUsed);
+  $("notYet").addEventListener("click", hideAfterPrint);
+}
+function saveSettings() { store.set("preset", state.preset); store.set("layout", state.L); }
+
+/* ---------- choosing spots on the sheet ---------- */
+const SLOT_NAMES = ["Top left", "Top right", "Bottom left", "Bottom right"];
+function saveUsed() { store.set("used", state.skip); }
+function toggleSlot(i) {
+  const next = state.skip.slice(); next[i] = !next[i];
+  if (next.every(Boolean)) {
+    setStatus("That would leave no free spots. Tap “Start a fresh sheet” if this one is finished.", true);
+    return;
+  }
+  setStatus("");
+  state.skip = next; saveUsed(); hideAfterPrint(); render();
+}
+function renderSlots(placed) {
+  const onFirst = new Map(placed.filter(p => p.sheet === 0).map((p, n) => [p.slot, p]));
+  const order = state.labels;
+  [...$("slots").children].forEach((b, i) => {
+    const used = state.skip[i];
+    b.setAttribute("aria-pressed", String(used));
+    b.textContent = "";
+    const big = document.createElement("span"); big.className = "big";
+    const small = document.createElement("span");
+    if (used) { big.textContent = "✕"; small.textContent = "Used"; }
+    else if (onFirst.has(i)) { big.textContent = String(order.indexOf(onFirst.get(i).lab) + 1); small.textContent = "Label " + big.textContent; }
+    else { big.textContent = "✓"; small.textContent = "Print here"; }
+    b.append(big, small);
+    b.setAttribute("aria-label", SLOT_NAMES[i] + ": " + (used ? "used, will be skipped" : "free, will be printed on") + ". Tap to change.");
+  });
+  const free = state.skip.filter(u => !u).length;
+  const n = state.labels.length;
+  let msg = free + " of 4 spots free on this sheet.";
+  if (n) {
+    const sheets = placed.length ? placed[placed.length - 1].sheet + 1 : 1;
+    msg += n <= free ? " " + n + " label" + (n > 1 ? "s" : "") + " will go in the numbered spots."
+                     : " The rest spill onto " + (sheets - 1 === 1 ? "a new sheet" : (sheets - 1) + " new sheets") + ".";
+  }
+  $("slotSummary").textContent = msg;
+}
+
+/* after printing: remember which spots are now used */
+let lastPrint = null;
+function showAfterPrint(placed) {
+  const last = placed[placed.length - 1].sheet;
+  const onLast = placed.filter(p => p.sheet === last).map(p => p.slot);
+  const newUsed = last === 0 ? state.skip.map((u, i) => u || onLast.includes(i)) : [0, 1, 2, 3].map(i => onLast.includes(i));
+  lastPrint = newUsed;
+  const left = newUsed.filter(u => !u).length;
+  $("afterText").textContent = left
+    ? "Once it's printed, shall I mark those spots as used? Next time, labels will go in the " + left + " spot" + (left > 1 ? "s" : "") + " left on the sheet."
+    : "Once it's printed, that sheet is full. Shall I start the next print on a fresh sheet?";
+  $("markUsed").textContent = left ? "Yes, mark them as used" : "Yes, fresh sheet next time";
+  $("afterPrint").hidden = false;
+}
+function hideAfterPrint() { $("afterPrint").hidden = true; lastPrint = null; }
+function markUsed() {
+  if (!lastPrint) return;
+  state.skip = lastPrint.every(Boolean) ? [false, false, false, false] : lastPrint;
+  saveUsed(); hideAfterPrint();
+  const left = state.skip.filter(u => !u).length;
+  state.labels = [];
+  setStatus(left === 4 ? "Done. The next print starts on a fresh sheet." : "Done. " + left + " spot" + (left > 1 ? "s" : "") + " left, remembered for next time.");
+  render();
+}
+
+/* ---------- loading files ---------- */
+let nextId = 1;
+const drop = $("drop"), fileInput = $("file");
+drop.addEventListener("click", () => fileInput.click());
+drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } });
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", e => { e.preventDefault(); drop.classList.remove("over"); addFiles(e.dataTransfer.files); });
+fileInput.addEventListener("change", () => { addFiles(fileInput.files); fileInput.value = ""; });
+
+window.addEventListener("paste", e => {
+  const files = [...(e.clipboardData?.files || [])];
+  if (files.length) { e.preventDefault(); addFiles(files); }
+});
+
+function setStatus(msg, err) { const s = $("status"); s.textContent = msg || ""; s.classList.toggle("err", !!err); }
+
+async function addFiles(list) {
+  const files = [...list];
+  if (!files.length) return;
+  hideAfterPrint();
+  setStatus("Reading " + (files.length === 1 ? files[0].name : files.length + " files") + "…");
+  let skipped = 0;
+  for (const file of files) {
+    try {
+      const isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+      if (isPdf) skipped += await addPdf(file);
+      else if (/^image\/(png|jpeg)$/.test(file.type)) await addImage(file);
+      else { setStatus(file.name + " isn't a PDF, PNG or JPG, so it was left out.", true); continue; }
+    } catch (err) {
+      console.error(err);
+      setStatus("Couldn't read " + file.name + ". If it's password-protected, download a fresh copy from Vinted.", true);
+      render(); return;
+    }
+  }
+  setStatus(skipped ? skipped + " blank page" + (skipped > 1 ? "s were" : " was") + " left out." : "");
+  render();
+}
+
+async function addPdf(file) {
+  if (!window.pdfjsLib) throw new Error("PDF reader didn't load");
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const fileId = nextId++;
+  state.files.set(fileId, { bytes: bytes.slice(0) });
+  const doc = await pdfjsLib.getDocument({ data: bytes }).promise;
+  let blank = 0;
+  for (let p = 1; p <= doc.numPages; p++) {
+    const page = await doc.getPage(p);
+    const v1 = page.getViewport({ scale: 1 });
+    const scale = Math.min(4, 1600 / Math.max(v1.width, v1.height));
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(viewport.width); canvas.height = Math.round(viewport.height);
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    const crop = detectSolidBox(canvas) || autoCrop(canvas);
+    if (!crop) { blank++; continue; }
+    state.labels.push({
+      id: nextId++, kind: "pdf", fileId, pageIndex: p - 1, rotate: ((page.rotate % 360) + 360) % 360,
+      viewport, canvas, crop,
+      name: file.name.replace(/\.pdf$/i, "") + (doc.numPages > 1 ? " (page " + p + ")" : "")
+    });
+  }
+  return blank;
+}
+
+async function addImage(file) {
+  const url = URL.createObjectURL(file);
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+  URL.revokeObjectURL(url);
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+  state.labels.push({ id: nextId++, kind: "image", canvas, crop: detectSolidBox(canvas) || autoCrop(canvas) || whole(canvas), name: file.name });
+}
+
+function whole(c) { return { x: 0, y: 0, w: c.width, h: c.height }; }
+
+// Many carrier labels (Evri, Royal Mail, etc.) print a solid-bordered box around the
+// address/barcode — the bit that actually needs to be big on the printed label — inside
+// a larger dashed cut-line, often next to a column of drop-off instructions. A dashed
+// line never forms one long continuous run of ink, so by looking for several full-width
+// solid horizontal rules that all share the same left/right edges (the box's own border
+// plus its internal section dividers) we can find that inner box and ignore everything
+// else on the page. Falls back to null — the caller then uses the old whole-page
+// ink bounding box — when a label doesn't look like this (e.g. no border at all).
+function detectSolidBox(canvas) {
+  const { width: W, height: H } = canvas;
+  const data = canvas.getContext("2d").getImageData(0, 0, W, H).data;
+  const isDark = i => data[i + 3] > 20 && (data[i] < 235 || data[i + 1] < 235 || data[i + 2] < 235);
+  const minRun = W * 0.12;
+  const lines = [];
+  for (let y = 0; y < H; y++) {
+    const row = y * W * 4;
+    let curStart = -1, curLen = 0, bestStart = -1, bestLen = 0;
+    for (let x = 0; x < W; x++) {
+      if (isDark(row + x * 4)) {
+        if (curStart < 0) curStart = x;
+        curLen++;
+        if (curLen > bestLen) { bestLen = curLen; bestStart = curStart; }
+      } else { curStart = -1; curLen = 0; }
+    }
+    if (bestLen >= minRun) lines.push({ y, start: bestStart, end: bestStart + bestLen - 1 });
+  }
+  if (lines.length < 3) return null;
+
+  const groups = new Map();
+  for (const l of lines) {
+    const key = Math.round(l.start / 6) + ":" + Math.round(l.end / 6);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(l);
+  }
+  let best = null;
+  for (const g of groups.values()) if (!best || g.length > best.length) best = g;
+  if (!best || best.length < 3) return null;
+
+  const x0 = Math.min(...best.map(l => l.start)), x1 = Math.max(...best.map(l => l.end));
+  const y0 = Math.min(...best.map(l => l.y)), y1 = Math.max(...best.map(l => l.y));
+  if ((x1 - x0 + 1) * (y1 - y0 + 1) < W * H * 0.1) return null;
+
+  const m = Math.max(1, Math.round(Math.max(W, H) * 0.004));
+  const cx0 = Math.max(0, x0 - m), cy0 = Math.max(0, y0 - m);
+  return { x: cx0, y: cy0, w: Math.min(W - cx0, x1 - x0 + 1 + 2 * m), h: Math.min(H - cy0, y1 - y0 + 1 + 2 * m) };
+}
+
+function autoCrop(canvas) {
+  const { width: W, height: H } = canvas;
+  const data = canvas.getContext("2d").getImageData(0, 0, W, H).data;
+  let x0 = W, y0 = H, x1 = -1, y1 = -1;
+  for (let y = 0; y < H; y++) {
+    const row = y * W * 4;
+    for (let x = 0; x < W; x++) {
+      const i = row + x * 4;
+      if (data[i + 3] > 20 && (data[i] < 235 || data[i + 1] < 235 || data[i + 2] < 235)) {
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+    }
+  }
+  if (x1 < 0) return null;
+  const m = Math.round(Math.max(W, H) * 0.008);
+  x0 = Math.max(0, x0 - m); y0 = Math.max(0, y0 - m);
+  x1 = Math.min(W - 1, x1 + m); y1 = Math.min(H - 1, y1 + m);
+  return { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+
+/* ---------- label list ---------- */
+function renderList() {
+  const ul = $("labelList");
+  ul.textContent = "";
+  for (const lab of state.labels) {
+    const li = document.createElement("li");
+    const th = document.createElement("canvas");
+    const s = 112 / Math.max(lab.crop.w, lab.crop.h);
+    th.width = Math.max(1, Math.round(lab.crop.w * s)); th.height = Math.max(1, Math.round(lab.crop.h * s));
+    th.getContext("2d").drawImage(lab.canvas, lab.crop.x, lab.crop.y, lab.crop.w, lab.crop.h, 0, 0, th.width, th.height);
+    const name = document.createElement("span"); name.className = "name"; name.textContent = lab.name; name.title = lab.name;
+    const acts = document.createElement("span"); acts.className = "acts";
+    const adj = document.createElement("button"); adj.textContent = "Adjust"; adj.onclick = () => openCrop(lab);
+    const rm = document.createElement("button"); rm.textContent = "Remove"; rm.setAttribute("aria-label", "Remove " + lab.name);
+    rm.onclick = () => { state.labels = state.labels.filter(l => l !== lab); render(); };
+    acts.append(adj, rm);
+    li.append(th, name, acts);
+    ul.appendChild(li);
+  }
+  $("cropHint").hidden = !state.labels.length;
+}
+
+/* ---------- sheet preview ---------- */
+function render() {
+  renderList();
+  const sheetsEl = $("sheets");
+  sheetsEl.textContent = "";
+  $("empty").hidden = !!state.labels.length;
+  $("go").disabled = !state.labels.length;
+  const L = state.L;
+  const placed = plan(state.labels, L, state.skip, state.rot);
+  const nSheets = Math.max(1, placed.length ? placed[placed.length - 1].sheet + 1 : 1);
+  renderSlots(placed);
+  if (!state.labels.length) return;
+  const px = 2.4; // canvas pixels per mm
+  for (let s = 0; s < nSheets; s++) {
+    const onSheet = placed.filter(p => p.sheet === s);
+    const wrap = document.createElement("div"); wrap.className = "sheet";
+    const c = document.createElement("canvas");
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = Math.round(A4.w * px * dpr); c.height = Math.round(A4.h * px * dpr);
+    const ctx = c.getContext("2d");
+    ctx.scale(px * dpr, px * dpr);   // now working in mm
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, A4.w, A4.h);
+    const slotCol = getComputedStyle(document.documentElement).getPropertyValue("--slot").trim() || "#E4E9EE";
+    for (let i = 0; i < 4; i++) {
+      const r = slotRect(i, L);
+      const used = s === 0 && state.skip[i];
+      ctx.fillStyle = used ? "#D3D9DF" : slotCol;
+      roundRect(ctx, r.x, r.y, r.w, r.h, 3); ctx.fill();
+      if (used) {
+        ctx.save(); roundRect(ctx, r.x, r.y, r.w, r.h, 3); ctx.clip();
+        ctx.strokeStyle = "rgba(0,0,0,.08)"; ctx.lineWidth = 2;
+        for (let d = -r.h; d < r.w; d += 6) { ctx.beginPath(); ctx.moveTo(r.x + d, r.y + r.h); ctx.lineTo(r.x + d + r.h, r.y); ctx.stroke(); }
+        ctx.restore();
+        ctx.fillStyle = "#4B5560"; ctx.font = "bold 9px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("Used", r.x + r.w / 2, r.y + r.h / 2);
+      }
+    }
+    for (const p of onSheet) {
+      const { lab, area, rot, k } = p;
+      const W = lab.crop.w * k, H = lab.crop.h * k;
+      ctx.save();
+      ctx.translate(area.x + area.w / 2, area.y + area.h / 2);
+      ctx.rotate(-rot * Math.PI / 180);
+      ctx.drawImage(lab.canvas, lab.crop.x, lab.crop.y, lab.crop.w, lab.crop.h, -W / 2, -H / 2, W, H);
+      ctx.restore();
+    }
+    if (s === 0) {
+      c.classList.add("clickable");
+      c.title = "Tap a spot to mark it used or free";
+      c.addEventListener("click", e => {
+        const b = c.getBoundingClientRect();
+        const mx = (e.clientX - b.left) / b.width * A4.w, my = (e.clientY - b.top) / b.height * A4.h;
+        for (let i = 0; i < 4; i++) {
+          const r = slotRect(i, L);
+          if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) { toggleSlot(i); break; }
+        }
+      });
+    }
+    const cap = document.createElement("p");
+    cap.textContent = "Sheet " + (s + 1) + " of " + nSheets + ": " + onSheet.length + " label" + (onSheet.length === 1 ? "" : "s") +
+      (s === 0 ? ". Tap a spot to mark it used or free." : "");
+    c.setAttribute("role", "img");
+    c.setAttribute("aria-label", cap.textContent);
+    wrap.append(c, cap);
+    sheetsEl.appendChild(wrap);
+  }
+}
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+
+/* ---------- crop editor ---------- */
+let cropLab = null, cropScale = 1, dragStart = null, draft = null;
+const cc = $("cropCanvas"), dlg = $("cropDlg");
+function openCrop(lab) {
+  cropLab = lab; draft = { ...lab.crop };
+  const maxW = Math.min(window.innerWidth * 0.86, 860), maxH = window.innerHeight * 0.65;
+  cropScale = Math.min(1, maxW / lab.canvas.width, maxH / lab.canvas.height);
+  cc.width = Math.round(lab.canvas.width * cropScale); cc.height = Math.round(lab.canvas.height * cropScale);
+  drawCrop();
+  dlg.showModal();
+}
+function drawCrop() {
+  const ctx = cc.getContext("2d");
+  ctx.drawImage(cropLab.canvas, 0, 0, cc.width, cc.height);
+  const r = { x: draft.x * cropScale, y: draft.y * cropScale, w: draft.w * cropScale, h: draft.h * cropScale };
+  ctx.fillStyle = "rgba(20,30,40,.45)";
+  ctx.beginPath(); ctx.rect(0, 0, cc.width, cc.height); ctx.rect(r.x, r.y, r.w, r.h); ctx.fill("evenodd");
+  ctx.strokeStyle = "#0F6E5C"; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.strokeRect(r.x, r.y, r.w, r.h); ctx.setLineDash([]);
+}
+function pt(e) {
+  const b = cc.getBoundingClientRect();
+  const x = (e.clientX - b.left) * (cc.width / b.width) / cropScale;
+  const y = (e.clientY - b.top) * (cc.height / b.height) / cropScale;
+  return { x: Math.max(0, Math.min(cropLab.canvas.width, x)), y: Math.max(0, Math.min(cropLab.canvas.height, y)) };
+}
+cc.addEventListener("pointerdown", e => { dragStart = pt(e); cc.setPointerCapture(e.pointerId); });
+cc.addEventListener("pointermove", e => {
+  if (!dragStart) return;
+  const p = pt(e);
+  const x = Math.min(p.x, dragStart.x), y = Math.min(p.y, dragStart.y);
+  const w = Math.abs(p.x - dragStart.x), h = Math.abs(p.y - dragStart.y);
+  if (w > 10 && h > 10) { draft = { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h) }; drawCrop(); }
+});
+cc.addEventListener("pointerup", () => { dragStart = null; });
+$("cropAuto").onclick = () => { draft = detectSolidBox(cropLab.canvas) || autoCrop(cropLab.canvas) || whole(cropLab.canvas); drawCrop(); };
+$("cropAll").onclick = () => { draft = whole(cropLab.canvas); drawCrop(); };
+$("cropDone").onclick = () => { cropLab.crop = draft; dlg.close(); render(); };
+
+/* ---------- building the PDF ---------- */
+async function buildPdf() {
+  const { PDFDocument, degrees } = PDFLib;
+  const out = await PDFDocument.create();
+  out.setTitle("Parcel labels");
+  const placed = plan(state.labels, state.L, state.skip, state.rot);
+  const firstSheet = placed[0].sheet, lastSheet = placed[placed.length - 1].sheet;
+  const pages = [];
+  for (let s = firstSheet; s <= lastSheet; s++) pages[s] = out.addPage([A4.w * MM, A4.h * MM]);
+
+  for (const p of placed) {
+    const { lab, area, rot, k } = p;
+    const page = pages[p.sheet];
+    const cx = (area.x + area.w / 2) * MM;
+    const cy = (A4.h - (area.y + area.h / 2)) * MM;
+    if (lab.kind === "pdf") {
+      const f = state.files.get(lab.fileId);
+      if (!f.doc) f.doc = await PDFDocument.load(f.bytes, { ignoreEncryption: true });
+      const [ax, ay] = lab.viewport.convertToPdfPoint(lab.crop.x, lab.crop.y);
+      const [bx, by] = lab.viewport.convertToPdfPoint(lab.crop.x + lab.crop.w, lab.crop.y + lab.crop.h);
+      const box = { left: Math.min(ax, bx), right: Math.max(ax, bx), bottom: Math.min(ay, by), top: Math.max(ay, by) };
+      const emb = await out.embedPage(f.doc.getPage(lab.pageIndex), box);
+      const s = k * MM * lab.viewport.scale;            // output points per source point
+      const theta = rot - lab.rotate;                    // undo the page's own turn, then ours
+      const bw = box.right - box.left, bh = box.top - box.bottom;
+      const o = originFor(cx, cy, bw, bh, s, theta);
+      page.drawPage(emb, { x: o.x, y: o.y, xScale: s, yScale: s, rotate: degrees(theta) });
+    } else {
+      const c = document.createElement("canvas");
+      c.width = lab.crop.w; c.height = lab.crop.h;
+      c.getContext("2d").drawImage(lab.canvas, lab.crop.x, lab.crop.y, lab.crop.w, lab.crop.h, 0, 0, c.width, c.height);
+      const png = await new Promise(r => c.toBlob(r, "image/png"));
+      const img = await out.embedPng(await png.arrayBuffer());
+      const s = k * MM;
+      const o = originFor(cx, cy, c.width, c.height, s, rot);
+      page.drawImage(img, { x: o.x, y: o.y, width: c.width * s, height: c.height * s, rotate: degrees(rot) });
+    }
+  }
+  return new Blob([await out.save()], { type: "application/pdf" });
+}
+
+const downloadsReady = (window.claude && window.claude.use) ? window.claude.use("downloads").catch(() => null) : Promise.resolve(null);
+
+$("go").addEventListener("click", async () => {
+  if (!window.PDFLib) { setStatus("The PDF maker didn't load. Check your internet connection and reload the page.", true); return; }
+  const btn = $("go");
+  btn.disabled = true; setStatus("Making your PDF…");
+  try {
+    const blob = await buildPdf();
+    const d = new Date();
+    const filename = "parcel-labels-" + d.toISOString().slice(0, 10) + ".pdf";
+    const downloads = await downloadsReady;
+    if (downloads) {
+      try {
+        await downloads.save({ filename, data: blob });
+        setStatus("Saved. Open it and print at 100% (Actual size).");
+        showAfterPrint(plan(state.labels, state.L, state.skip, state.rot));
+      } catch (e) {
+        if (e && e.code === "declined") setStatus("Download cancelled.");
+        else if (e && e.code === "rate_limited") setStatus("A save prompt is already open. Finish that one first.", true);
+        else setStatus("Downloads aren't available here. Try opening this page on a computer.", true);
+      }
+    } else {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+      setStatus("Downloaded. Open it and print at 100% (Actual size).");
+      showAfterPrint(plan(state.labels, state.L, state.skip, state.rot));
+    }
+  } catch (err) {
+    console.error(err);
+    setStatus("Couldn't make the PDF: " + (err && err.message ? err.message : err), true);
+  } finally {
+    btn.disabled = !state.labels.length;
+  }
+});
+
+initSettings();
+render();
+if (!window.pdfjsLib || !window.PDFLib) setStatus("Some parts didn't load. Check your internet connection and reload the page.", true);
+</script>
+</body>
+</html>
